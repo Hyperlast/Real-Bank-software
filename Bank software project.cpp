@@ -7,8 +7,9 @@ bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
 void MainScreen(char input);//Main screen and the operations in it
 void LoginScreen(char choice);//Login menu screen
-void LoggedinScreen(int money);//The screen that comes up after login
+void LoggedinScreen(int& money);//The screen that comes up after login
 void RegisterScreen(char choice);//The screen that comes up when asked to register
+void CancelAccountScreen(char& choice,int& money);//The screen that comes up after you chose to cancel the account
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
@@ -45,6 +46,7 @@ void MainScreen(char input)
             RegisterScreen(choice);
             break;
         case 'Q':
+            //save changes to registry and quit;
             
             break;
 
@@ -99,9 +101,33 @@ void RegisterScreen(char choice)
     cout << "Please Register";
     cout << "";
 }
-void LoggedinScreen(int money)
+void CancelAccountScreen(char& choice,int& money)
+{
+    int CancelChoice;
+    cout << "Are you sure you want to cancel your account?\n";
+    cout << "1-Yes\n";
+    cout << "2-No\n";
+    cin >> CancelChoice;
+    while (CancelChoice != 1 && CancelChoice != 2)
+    {
+        cout << "Unrecognised command,try again: \n";
+        cin >> CancelChoice;
+    }
+   
+    system("CLS");
+    if (CancelChoice == 1)
+    {
+        //delete account
+    }
+    if (CancelChoice == 2)
+    {
+        LoggedinScreen(money);
+    }
+}
+void LoggedinScreen(int& money)
 {
     char choice2;
+    int Amount = money;
     cout << "You have " << money << " BGN. Choose one of the following options:" << endl;
     cout << "C - Cancel account"<<endl;
     cout << "D - deposit" << endl;
@@ -118,5 +144,19 @@ void LoggedinScreen(int money)
     switch (choice2)
     {
         case 'C':
+            CancelAccountScreen(choice2,Amount);
+            break;
+        case 'D':
+            //deposit
+            break;
+        case 'L':
+            //logout
+            break;
+        case 'T':
+            //transfer
+            break;
+        case 'W':
+            //withdraw
+            break;
     }
 }
