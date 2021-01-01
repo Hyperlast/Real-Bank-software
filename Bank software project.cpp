@@ -10,6 +10,7 @@ void LoginScreen(char choice);//Login menu screen
 void LoggedinScreen(int& money);//The screen that comes up after login
 void RegisterScreen(char choice);//The screen that comes up when asked to register
 void CancelAccountScreen(char& choice,int& money);//The screen that comes up after you chose to cancel the account
+void LogoutScreen(char& choice, int& money);//The screen that comes up after logout command 
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
@@ -46,7 +47,7 @@ void MainScreen(char input)
             RegisterScreen(choice);
             break;
         case 'Q':
-            //save changes to registry and quit;
+            //save changes to registry and quit the text file ;
             
             break;
 
@@ -82,6 +83,7 @@ bool LoggedInValidation(char& choice2)
 
 void LoginScreen(char choice)
 {
+   //make login possible
     string username;
     string password;
     int money;
@@ -98,8 +100,14 @@ void LoginScreen(char choice)
 }
 void RegisterScreen(char choice)
 {
-    cout << "Please Register";
-    cout << "";
+    cout << "Please Register\n\n\n";
+    cout << "Enter your username:";
+    //enter username
+    cout << "\nEnter your password:";
+    //enter password
+    cout << "\nConfirm password:";
+    //check if password is the same
+    //make the amount of money in the account 0 to begin with
 }
 void CancelAccountScreen(char& choice,int& money)
 {
@@ -117,9 +125,32 @@ void CancelAccountScreen(char& choice,int& money)
     system("CLS");
     if (CancelChoice == 1)
     {
+        cout << "Enter password to confirm: \n";
         //delete account
     }
     if (CancelChoice == 2)
+    {
+        LoggedinScreen(money);
+    }
+}
+void LogoutScreen(char& choice,int& money)
+{
+    int LogoutChoice;
+    cout << "Are you sure you wish to logout?\n";
+    cout << "1-Yes\n";
+    cout << "2-No\n";
+    cin >> LogoutChoice;
+    while (LogoutChoice != 1 && LogoutChoice != 2)
+    {
+        cout << "Unrecognised command,try again: \n";
+        cin >> LogoutChoice;
+    }
+    system("CLS");
+    if (LogoutChoice == 1)
+    {
+        MainScreen(choice);
+    }
+    if (LogoutChoice == 2)
     {
         LoggedinScreen(money);
     }
@@ -150,7 +181,7 @@ void LoggedinScreen(int& money)
             //deposit
             break;
         case 'L':
-            //logout
+            LogoutScreen(choice2, Amount);
             break;
         case 'T':
             //transfer
