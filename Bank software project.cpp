@@ -5,12 +5,15 @@
 using namespace std;
 bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
+float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input);//Main screen and the operations in it
 void LoginScreen(char choice);//Login menu screen
-void LoggedinScreen(int& money);//The screen that comes up after login
+void LoggedinScreen(float& money);//The screen that comes up after login
 void RegisterScreen(char choice);//The screen that comes up when asked to register
-void CancelAccountScreen(char& choice,int& money);//The screen that comes up after you chose to cancel the account
-void LogoutScreen(char& choice, int& money);//The screen that comes up after logout command 
+void CancelAccountScreen(char& choice,float& money);//The screen that comes up after you chose to cancel the account
+void LogoutScreen(char& choice, float& money);//The screen that comes up after logout command 
+void Deposit(float& money);//Deposit screen
+void Withdraw(float& money);//Withdraw screen
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
@@ -80,19 +83,25 @@ bool LoggedInValidation(char& choice2)
     }
     return true;
 }
-
+float RoundMoney(float& money)
+{
+    float value = (int)(money * 100 + .5);
+    return (float)value / 100;
+}
 void LoginScreen(char choice)
 {
    //make login possible
     string username;
     string password;
-    int money;
-    money = 10;
+    float money;
+    money = 0;
     cout << "Login\n\n";
     cout << "username:";
     cin >> username;
+    //verify if it exists
     cout << "\npassword:";
     cin >> password;
+    //verify if it matches
 
     system("CLS");
     LoggedinScreen(money);
@@ -122,7 +131,7 @@ void RegisterScreen(char choice)
     system("CLS");
     MainScreen(choice);
 }
-void CancelAccountScreen(char& choice,int& money)
+void CancelAccountScreen(char& choice,float& money)
 {
     int CancelChoice;
     cout << "Are you sure you want to cancel your account?\n";
@@ -146,7 +155,17 @@ void CancelAccountScreen(char& choice,int& money)
         LoggedinScreen(money);
     }
 }
-void LogoutScreen(char& choice,int& money)
+void Deposit(float& money)
+{
+    float deposit;
+    cout << "How much would you like to deposit?";
+    cin >> deposit;
+    deposit=RoundMoney(deposit);
+    money += deposit;
+    system("CLS");
+    LoggedinScreen(money);
+}
+void LogoutScreen(char& choice,float& money)
 {
     int LogoutChoice;
     cout << "Are you sure you wish to logout?\n";
@@ -161,17 +180,35 @@ void LogoutScreen(char& choice,int& money)
     system("CLS");
     if (LogoutChoice == 1)
     {
-        MainScreen(choice);
+        MainScreen(choice);//Go back to the mainscreen
     }
     if (LogoutChoice == 2)
     {
-        LoggedinScreen(money);
+        LoggedinScreen(money);//Stay in your account
     }
 }
-void LoggedinScreen(int& money)
+void Withdraw(float& money)
+{
+    float withdraw;
+    cout << "How much would you like to withdraw?\n";
+    cin >> withdraw;
+    withdraw=RoundMoney(withdraw);
+    
+    while ((money - withdraw) < -10000)
+    {
+        cout << "Cannot withdraw that amount because your balance is "<<money<<" try again:";
+        cin >> withdraw;
+        withdraw=RoundMoney(withdraw);
+    }
+    money -= withdraw;
+
+    system("CLS");
+    LoggedinScreen(money);
+}
+void LoggedinScreen(float& money)
 {
     char choice2;
-    int Amount = money;
+    float Amount = money;
     cout << "You have " << money << " BGN. Choose one of the following options:" << endl;
     cout << "C - Cancel account"<<endl;
     cout << "D - deposit" << endl;
@@ -191,7 +228,7 @@ void LoggedinScreen(int& money)
             CancelAccountScreen(choice2,Amount);
             break;
         case 'D':
-            //deposit
+            Deposit(money);
             break;
         case 'L':
             LogoutScreen(choice2, Amount);
@@ -200,7 +237,7 @@ void LoggedinScreen(int& money)
             //transfer
             break;
         case 'W':
-            //withdraw
+            Withdraw(money);
             break;
     }
 }
