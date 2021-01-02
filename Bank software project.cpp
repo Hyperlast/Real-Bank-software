@@ -100,14 +100,27 @@ void LoginScreen(char choice)
 }
 void RegisterScreen(char choice)
 {
+    string FullAccout;
+    string Name;
+    string Password;
+    string Passwordtemp;
     cout << "Please Register\n\n\n";
+    
     cout << "Enter your username:";
-    //enter username
+    cin >> Name;
+    //validate
     cout << "\nEnter your password:";
-    //enter password
+    cin >> Password;
     cout << "\nConfirm password:";
-    //check if password is the same
-    //make the amount of money in the account 0 to begin with
+    cin >> Passwordtemp;
+    while (Passwordtemp != Password)
+    {
+        cout << "\nPassword validation incorrect,try to confirm your passowrd again:";
+        cin >> Passwordtemp;
+    }
+    //write the account in the text file and make the amount of money in the account 0 to begin with
+    system("CLS");
+    MainScreen(choice);
 }
 void CancelAccountScreen(char& choice,int& money)
 {
