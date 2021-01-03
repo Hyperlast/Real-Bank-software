@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+
 using namespace std;
+
 bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
@@ -14,6 +16,7 @@ void CancelAccountScreen(char& choice,float& money);//The screen that comes up a
 void LogoutScreen(char& choice, float& money);//The screen that comes up after logout command 
 void Deposit(float& money);//Deposit screen
 void Withdraw(float& money);//Withdraw screen
+
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
@@ -22,9 +25,9 @@ int main()
 
     return 0;
 }
+
 void MainScreen(char input)
 {  
-
     cout << "Welcome to Sevastopol Bank" << endl << endl << endl;
     cout << "L-Login" << endl;
     cout << "R=Register" << endl;
@@ -56,6 +59,7 @@ void MainScreen(char input)
 
     }
 }
+
 bool MainValidation(char& choice)
 {
     if (choice == 'l' || choice == 'r' || choice == 'q')
@@ -70,6 +74,7 @@ bool MainValidation(char& choice)
 
     return true;
 }
+
 bool LoggedInValidation(char& choice2)
 {
     if (choice2 == 'c' || choice2 == 'd' || choice2 == 'l' || choice2 == 't' || choice2 == 'w')
@@ -83,11 +88,13 @@ bool LoggedInValidation(char& choice2)
     }
     return true;
 }
+
 float RoundMoney(float& money)
 {
     float value = (int)(money * 100 + .5);
     return (float)value / 100;
 }
+
 void LoginScreen(char choice)
 {
    //make login possible
@@ -107,6 +114,7 @@ void LoginScreen(char choice)
     LoggedinScreen(money);
 
 }
+
 void RegisterScreen(char choice)
 {
     string FullAccout;
@@ -131,6 +139,7 @@ void RegisterScreen(char choice)
     system("CLS");
     MainScreen(choice);
 }
+
 void CancelAccountScreen(char& choice,float& money)
 {
     int CancelChoice;
@@ -155,6 +164,7 @@ void CancelAccountScreen(char& choice,float& money)
         LoggedinScreen(money);
     }
 }
+
 void Deposit(float& money)
 {
     float deposit;
@@ -165,6 +175,7 @@ void Deposit(float& money)
     system("CLS");
     LoggedinScreen(money);
 }
+
 void LogoutScreen(char& choice,float& money)
 {
     int LogoutChoice;
@@ -187,6 +198,7 @@ void LogoutScreen(char& choice,float& money)
         LoggedinScreen(money);//Stay in your account
     }
 }
+
 void Withdraw(float& money)
 {
     float withdraw;
@@ -205,6 +217,7 @@ void Withdraw(float& money)
     system("CLS");
     LoggedinScreen(money);
 }
+
 void LoggedinScreen(float& money)
 {
     char choice2;
