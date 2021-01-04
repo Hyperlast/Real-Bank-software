@@ -110,7 +110,7 @@ void LoginScreen(char choice)
     cout << "\npassword:";
     cin >> password;
     //verify if it matches
-
+    // Change money to the amount in the account 
     system("CLS");
     LoggedinScreen(money);
 
