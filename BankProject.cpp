@@ -7,7 +7,8 @@ using namespace std;
 
 bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
-bool RegisterUsernameValidation(string username);
+bool RegisterUsernameValidation(string username);//Validation of the Username accepted characters 
+bool RegisterPasswordValidation(string password);//Validation of the Password accepted and 
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input);//Main screen and the operations in it
 void LoginScreen(char choice);//Login menu screen
@@ -110,6 +111,55 @@ bool RegisterUsernameValidation(string username)
 
     return true;
 }
+
+bool RegisterPasswordValidation(string password)
+{
+    if (password.length() < 5)
+    {
+        return false;
+    }
+    for (int i = 0; i < password.length(); ++i)
+    {
+        if ((password[i] < '@' || password[i]>'Z') && (password[i] < 'a' || password[i]>'z'))
+        {
+            if (password[i] < '0' || password[i]>9)
+            {
+                if ((password[i] != '!' || password[i] != '*' || password[i] != '^') && (password[i] < '#' || password[i]>'&'))
+                {
+                    return false;
+                }
+            }
+        }
+    }
+    int LowerCaseCounter=0;
+    int UpperCaseCounter=0;
+    int Symbol=0;
+    for (int i = 0; i < password.length(); ++i)
+    {
+        if (password[i] >= 'a' && password[i] <= 'z')
+        {
+            LowerCaseCounter++;
+        }
+        if (password[i] >= 'A' && password[i] <= 'Z')
+        {
+            UpperCaseCounter++;
+        }
+        if (password[i] == '!' || password[i] == '@' || password[i] == '#' || password[i] == '$' || password[i] == '%')
+        {
+            Symbol++;
+        }
+        if (password[i] == '^' || password[i] == '&' || password[i] == '*')
+        {
+            Symbol++;
+        }
+    }
+    if (LowerCaseCounter < 1 || UpperCaseCounter < 1 || Symbol < 1)
+    {
+        return false;
+    }
+    return true;
+}
+
 float RoundMoney(float& money)
 {
     float value = roundf(money * 100);
@@ -149,12 +199,17 @@ void RegisterScreen(char choice)
     cin >> Name;
     while (!RegisterUsernameValidation(Name))
     {
-        cout << "\n You've used a symbol that is not allowed for a username please try again:\n";
+        cout << "\nYou've used a symbol that is not allowed for a username please try again:\n";
         cin >> Name;
     }
-    //validate
-    cout << "\nEnter your password:";
+    //validate if there is an existing username using the txt info
+    cout << "\nEnter your password that has atleast 1 Large 1 small letter and 1 symbol:";
     cin >> Password;
+    while (!RegisterPasswordValidation(Password))
+    {
+        cout << "\nThe password you've created is either invalid or too short(5 symbols min).\nPlease use only English characters,numbers or !@#$%^&*\n";
+        cin >> Password;
+    }
     cout << "\nConfirm password:";
     cin >> Passwordtemp;
     while (Passwordtemp != Password)
