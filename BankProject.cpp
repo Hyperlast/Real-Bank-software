@@ -7,6 +7,7 @@ using namespace std;
 
 bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
+bool RegisterUsernameValidation(string username);
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input);//Main screen and the operations in it
 void LoginScreen(char choice);//Login menu screen
@@ -29,6 +30,14 @@ int main()
 
 void MainScreen(char input)
 {  
+    fstream file;
+    file.open("users.txt" ,fstream::in);
+    if (!file.is_open())
+    {
+        system("CLS");
+        cout << "The users.txt file can't be opened please check for it and try again";
+    }
+    file.close();
     cout << "Welcome to Sevastopol Bank" << endl << endl << endl;
     cout << "L-Login" << endl;
     cout << "R=Register" << endl;
@@ -55,10 +64,10 @@ void MainScreen(char input)
             break;
         case 'Q':
             //save changes to registry and quit the text file ;
-            
             break;
 
     }
+
 }
 
 bool MainValidation(char& choice)
@@ -90,10 +99,21 @@ bool LoggedInValidation(char& choice2)
     return true;
 }
 
+bool RegisterUsernameValidation(string username)
+{
+   
+    for (int i = 0; i < username.length(); ++i)
+    {
+        if ((username[i] < '!') || (username[i] > '/' && username[i] < ':')|| username[i] >'~'||username[i]=='?')
+            return false;
+    }
+
+    return true;
+}
 float RoundMoney(float& money)
 {
-    float value = (int)(money * 100 + .5);
-    return (float)value / 100;
+    float value = roundf(money * 100);
+    return value / 100;
 }
 
 void LoginScreen(char choice)
@@ -118,14 +138,20 @@ void LoginScreen(char choice)
 
 void RegisterScreen(char choice)
 {
-    string FullAccout;
+    
     string Name;
     string Password;
     string Passwordtemp;
+    string money = "0";
     cout << "Please Register\n\n\n";
     
     cout << "Enter your username:";
     cin >> Name;
+    while (!RegisterUsernameValidation(Name))
+    {
+        cout << "\n You've used a symbol that is not allowed for a username please try again:\n";
+        cin >> Name;
+    }
     //validate
     cout << "\nEnter your password:";
     cin >> Password;
@@ -136,31 +162,45 @@ void RegisterScreen(char choice)
         cout << "\nPassword validation incorrect,try to confirm your passowrd again:";
         cin >> Passwordtemp;
     }
-    //write the account in the text file and make the amount of money in the account 0 to begin with
+    //hashpassword
+    string FullAccount = Name;
+    FullAccount += ":";
+    FullAccount += Password;
+    FullAccount += ":";
+    FullAccount += money;
+    cout << FullAccount;
     system("CLS");
     MainScreen(choice);
 }
 
 void CancelAccountScreen(char& choice,float& money)
 {
-    int CancelChoice;
+    char CancelChoice;
     cout << "Are you sure you want to cancel your account?\n";
     cout << "1-Yes\n";
     cout << "2-No\n";
     cin >> CancelChoice;
-    while (CancelChoice != 1 && CancelChoice != 2)
+    while (CancelChoice != '1' && CancelChoice != '2')
     {
         cout << "Unrecognised command,try again: \n";
         cin >> CancelChoice;
     }
    
     system("CLS");
-    if (CancelChoice == 1)
+    if (CancelChoice == '1')
     {
+        
         cout << "Enter password to confirm: \n";
+        //hash and validate 
+        
+        if (money != 0)
+        {
+            cout << "Cannot Delete account.You have " << money << " BGN in it.";
+            LoggedinScreen(money);
+        }
         //delete account
     }
-    if (CancelChoice == 2)
+    if (CancelChoice == '2')
     {
         LoggedinScreen(money);
     }
@@ -179,24 +219,24 @@ void Deposit(float& money)
 
 void LogoutScreen(char& choice,float& money)
 {
-    int LogoutChoice;
+    char LogoutChoice;
     cout << "Are you sure you wish to logout?\n";
     cout << "1-Yes\n";
     cout << "2-No\n";
     cin >> LogoutChoice;
-    while (LogoutChoice != 1 && LogoutChoice != 2)
+    while (LogoutChoice != '1' && LogoutChoice != '2')
     {
         cout << "Unrecognised command,try again: \n";
         cin >> LogoutChoice;
     }
     system("CLS");
-    if (LogoutChoice == 1)
+    if (LogoutChoice == '1')
     {
-        MainScreen(choice);//Go back to the mainscreen
+        MainScreen(choice);
     }
-    if (LogoutChoice == 2)
+    if (LogoutChoice == '2')
     {
-        LoggedinScreen(money);//Stay in your account
+        LoggedinScreen(money);
     }
 }
 
