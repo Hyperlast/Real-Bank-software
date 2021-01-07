@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -31,6 +32,8 @@ int main()
 
 void MainScreen(char input)
 {  
+    vector<string>accounts;
+    string buffer;
     fstream file;
     file.open("users.txt" ,fstream::in);
     if (!file.is_open())
@@ -38,14 +41,23 @@ void MainScreen(char input)
         system("CLS");
         cout << "The users.txt file can't be opened please check for it and try again";
     }
+    while (getline(file, buffer))
+    {
+        accounts.push_back(buffer);
+    }
     file.close();
+    
+    for (unsigned int i = 0; i < accounts.size(); ++i)
+    {
+        cout << accounts[i]<<endl;
+    }
+    
     cout << "Welcome to Sevastopol Bank" << endl << endl << endl;
     cout << "L-Login" << endl;
     cout << "R=Register" << endl;
     cout << "Q=Quit" << endl;
 
     char choice;//Human choice 
-
     cin >> choice;
     while (!MainValidation(choice))
     {
@@ -54,6 +66,7 @@ void MainScreen(char input)
     }
 
     system("CLS");//clears the screen for the next menu
+
     switch (choice)
     {
         case 'L':
@@ -103,7 +116,7 @@ bool LoggedInValidation(char& choice2)
 bool RegisterUsernameValidation(string username)
 {
    
-    for (int i = 0; i < username.length(); ++i)
+    for (unsigned int i = 0; i < username.size(); ++i)
     {
         if ((username[i] < '!') || (username[i] > '/' && username[i] < ':')|| username[i] >'~'||username[i]=='?')
             return false;
@@ -114,11 +127,11 @@ bool RegisterUsernameValidation(string username)
 
 bool RegisterPasswordValidation(string password)
 {
-    if (password.length() < 5)
+    if ( password.size() < 5)
     {
         return false;
     }
-    for (int i = 0; i < password.length(); ++i)
+    for (unsigned int i = 0; i < password.size(); ++i)
     {
         if ((password[i] < '@' || password[i]>'Z') && (password[i] < 'a' || password[i]>'z'))
         {
@@ -134,7 +147,7 @@ bool RegisterPasswordValidation(string password)
     int LowerCaseCounter=0;
     int UpperCaseCounter=0;
     int Symbol=0;
-    for (int i = 0; i < password.length(); ++i)
+    for (unsigned int i = 0; i < password.size(); ++i)
     {
         if (password[i] >= 'a' && password[i] <= 'z')
         {
@@ -182,6 +195,7 @@ void LoginScreen(char choice)
     //verify if it matches
     // Change money to the amount in the account 
     system("CLS");
+
     LoggedinScreen(money);
 
 }
@@ -244,7 +258,6 @@ void CancelAccountScreen(char& choice,float& money)
     system("CLS");
     if (CancelChoice == '1')
     {
-        
         cout << "Enter password to confirm: \n";
         //hash and validate 
         
