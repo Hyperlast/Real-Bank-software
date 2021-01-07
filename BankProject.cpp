@@ -11,26 +11,26 @@ bool LoggedInValidation(char& choice2);//Validating for the command you give aft
 bool RegisterUsernameValidation(string username);//Validation of the Username accepted characters 
 bool RegisterPasswordValidation(string password);//Validation of the Password accepted and 
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
-void MainScreen(char input);//Main screen and the operations in it
-void LoginScreen(char choice);//Login menu screen
-void LoggedinScreen(float& money);//The screen that comes up after login
-void RegisterScreen(char choice);//The screen that comes up when asked to register
-void CancelAccountScreen(char& choice,float& money);//The screen that comes up after you chose to cancel the account
-void LogoutScreen(char& choice, float& money);//The screen that comes up after logout command 
-void Deposit(float& money);//Deposit screen
-void Withdraw(float& money);//Withdraw screen
+void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
+void LoginScreen(char choice, vector<string>&users);//Login menu screen
+void LoggedinScreen(float& money, vector<string>&users);//The screen that comes up after login
+void RegisterScreen(char choice, vector<string>&users);//The screen that comes up when asked to register
+void CancelAccountScreen(char& choice,float& money, vector<string>&users);//The screen that comes up after you chose to cancel the account
+void LogoutScreen(char& choice, float& money, vector<string>&users);//The screen that comes up after logout command 
+void Deposit(float& money, vector<string>&users);//Deposit screen
+void Withdraw(float& money, vector<string>&users);//Withdraw screen
 
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
-    
-    MainScreen(input);//Main screen of the program
+    vector<string> nullVec;//needed to pass the mainscreen function initially 
+    MainScreen(input,nullVec);//Main screen of the program
 
     return 0;
 }
 
 
-void MainScreen(char input)
+void MainScreen(char input,vector<string>&users)
 {  
     vector<string>accounts;
     string buffer;
@@ -70,11 +70,11 @@ void MainScreen(char input)
     switch (choice)
     {
         case 'L':
-            LoginScreen(choice);
+            LoginScreen(choice,accounts);
             break;
 
         case 'R':
-            RegisterScreen(choice);
+            RegisterScreen(choice,accounts);
             break;
         case 'Q':
             //save changes to registry and quit the text file ;
@@ -118,7 +118,7 @@ bool RegisterUsernameValidation(string username)
    
     for (unsigned int i = 0; i < username.size(); ++i)
     {
-        if ((username[i] < '!') || (username[i] > '/' && username[i] < ':')|| username[i] >'~'||username[i]=='?')
+        if ((username[i] < '!') || (username[i] > '/' && username[i] <= ':')|| username[i] >'~'||username[i]=='?')
             return false;
     }
 
@@ -179,7 +179,7 @@ float RoundMoney(float& money)
     return value / 100;
 }
 
-void LoginScreen(char choice)
+void LoginScreen(char choice, vector<string>&users)
 {
    //make login possible
     string username;
@@ -196,11 +196,11 @@ void LoginScreen(char choice)
     // Change money to the amount in the account 
     system("CLS");
 
-    LoggedinScreen(money);
+    LoggedinScreen(money,users);
 
 }
 
-void RegisterScreen(char choice)
+void RegisterScreen(char choice, vector<string>&users)
 {
     
     string Name;
@@ -239,10 +239,10 @@ void RegisterScreen(char choice)
     FullAccount += money;
     cout << FullAccount;
     system("CLS");
-    MainScreen(choice);
+    MainScreen(choice,users);
 }
 
-void CancelAccountScreen(char& choice,float& money)
+void CancelAccountScreen(char& choice,float& money, vector<string>&users)
 {
     char CancelChoice;
     cout << "Are you sure you want to cancel your account?\n";
@@ -264,17 +264,17 @@ void CancelAccountScreen(char& choice,float& money)
         if (money != 0)
         {
             cout << "Cannot Delete account.You have " << money << " BGN in it.";
-            LoggedinScreen(money);
+            LoggedinScreen(money,users);
         }
         //delete account
     }
     if (CancelChoice == '2')
     {
-        LoggedinScreen(money);
+        LoggedinScreen(money,users);
     }
 }
 
-void Deposit(float& money)
+void Deposit(float& money, vector<string>&users)
 {
     float deposit;
     cout << "How much would you like to deposit?";
@@ -282,10 +282,10 @@ void Deposit(float& money)
     deposit=RoundMoney(deposit);
     money += deposit;
     system("CLS");
-    LoggedinScreen(money);
+    LoggedinScreen(money,users);
 }
 
-void LogoutScreen(char& choice,float& money)
+void LogoutScreen(char& choice,float& money, vector<string>&users)
 {
     char LogoutChoice;
     cout << "Are you sure you wish to logout?\n";
@@ -300,15 +300,15 @@ void LogoutScreen(char& choice,float& money)
     system("CLS");
     if (LogoutChoice == '1')
     {
-        MainScreen(choice);
+        MainScreen(choice,users);
     }
     if (LogoutChoice == '2')
     {
-        LoggedinScreen(money);
+        LoggedinScreen(money,users);
     }
 }
 
-void Withdraw(float& money)
+void Withdraw(float& money, vector<string>&users)
 {
     float withdraw;
     cout << "How much would you like to withdraw?\n";
@@ -324,10 +324,10 @@ void Withdraw(float& money)
     money -= withdraw;
 
     system("CLS");
-    LoggedinScreen(money);
+    LoggedinScreen(money,users);
 }
 
-void LoggedinScreen(float& money)
+void LoggedinScreen(float& money, vector<string>&users)
 {
     char choice2;
     float Amount = money;
@@ -347,19 +347,19 @@ void LoggedinScreen(float& money)
     switch (choice2)
     {
         case 'C':
-            CancelAccountScreen(choice2,Amount);
+            CancelAccountScreen(choice2,Amount,users);
             break;
         case 'D':
-            Deposit(money);
+            Deposit(money,users);
             break;
         case 'L':
-            LogoutScreen(choice2, Amount);
+            LogoutScreen(choice2, Amount,users);
             break;
         case 'T':
             //transfer
             break;
         case 'W':
-            Withdraw(money);
+            Withdraw(money,users);
             break;
     }
 }
