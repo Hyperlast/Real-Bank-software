@@ -181,7 +181,7 @@ float RoundMoney(float& money)
 
 void LoginScreen(char choice, vector<string>&users)
 {
-   //make login possible
+    string FullUser;
     string username;
     string password;
     float money;
@@ -189,6 +189,24 @@ void LoginScreen(char choice, vector<string>&users)
     cout << "Login\n\n";
     cout << "username:";
     cin >> username;
+    //implement into function 
+    for (int i = 0; i < users.size(); ++i)
+    {
+        string temp = users[i];
+        string UsernameVar;
+        int j = 0;
+        while (temp[j] != ':')
+        {
+            UsernameVar += temp[j];
+            ++j;
+        }
+        if (username == UsernameVar)
+        {
+            FullUser += username;
+            FullUser += ':';
+            break;
+        }
+    }
     //verify if it exists
     cout << "\npassword:";
     cin >> password;
@@ -238,6 +256,7 @@ void RegisterScreen(char choice, vector<string>&users)
     FullAccount += ":";
     FullAccount += money;
     cout << FullAccount;
+    //add account to vector
     system("CLS");
     MainScreen(choice,users);
 }
