@@ -11,6 +11,7 @@ bool LoggedInValidation(char& choice2);//Validating for the command you give aft
 bool RegisterUsernameValidation(string username);//Validation of the Username accepted characters 
 bool RegisterPasswordValidation(string password);//Validation of the Password accepted and
 bool UsernameLoginValidation(string username, vector<string>& users);
+bool LoginPasswordValidation(string username, string password, vector<string>& users);
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
 void LoginScreen(char choice, vector<string>&users);//Login menu screen
@@ -20,6 +21,7 @@ void CancelAccountScreen(char& choice,float& money, vector<string>&users);//The 
 void LogoutScreen(char& choice, float& money, vector<string>&users);//The screen that comes up after logout command 
 void Deposit(float& money, vector<string>&users);//Deposit screen
 void Withdraw(float& money, vector<string>&users);//Withdraw screen
+string MoneyInUserAccount(string username, vector<string>& users);
 
 int main()
 {
@@ -80,7 +82,6 @@ void MainScreen(char input,vector<string>&users)
             break;
 
     }
-
 }
 
 bool MainValidation(char& choice)
@@ -133,6 +134,7 @@ bool UsernameLoginValidation(string username, vector<string>& users)
     }
     return false;
 }
+
 bool RegisterUsernameValidation(string username)
 {
    
@@ -193,10 +195,84 @@ bool RegisterPasswordValidation(string password)
     return true;
 }
 
+bool LoginPasswordValidation(string username, string password, vector<string>& users)
+{
+    string UserWPass;
+    UserWPass += username;
+    UserWPass += ':';
+    UserWPass += password;
+    UserWPass += ':';
+    for (unsigned int i = 0; i < users.size(); ++i)
+    {
+        {
+            string temp = users[i];
+            string UsernameVar;
+            int j = 0;
+            int counter=0;
+            while (counter!=2)
+            {
+                if (temp[j] == ':')
+                {
+                    counter++;
+                }
+
+                UsernameVar += temp[j];
+                ++j;
+            }
+            if (UserWPass == UsernameVar)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 float RoundMoney(float& money)
 {
     float value = roundf(money * 100);
     return value / 100;
+}
+
+string MoneyInUserAccount(string username,string password, vector<string>& users)
+{
+    string FindMoneyInAccount;
+    bool AccountFound = false;
+    unsigned int i = 0;
+    for (; i < users.size(); ++i)
+    {
+        if (AccountFound)
+        {
+            break;
+        }
+        string temp=users[i];
+        string checker;
+        int j = 0;
+        while (temp[j] != ':')
+        {
+            checker += temp[j];
+            j++;
+        }
+        if (checker == username)
+        {
+            FindMoneyInAccount += users[i];
+            AccountFound = true;
+        }
+    }
+    string Money;
+    int counter = 0;
+    for (unsigned int i = 0; i < FindMoneyInAccount.size(); ++i)
+    {
+        if (counter == 2)
+        {
+            Money += FindMoneyInAccount[i];
+        }
+        if (FindMoneyInAccount[i] == ':')
+        {
+            counter++;
+        }
+    }
+    return Money;
 }
 
 void LoginScreen(char choice, vector<string>&users)
@@ -205,7 +281,6 @@ void LoginScreen(char choice, vector<string>&users)
     string username;
     string password;
     float money;
-    money = 0;
     cout << "Login\n\n";
     cout << "username:";
     cin >> username;
@@ -216,12 +291,16 @@ void LoginScreen(char choice, vector<string>&users)
     }
     cout << "\npassword:";
     cin >> password;
-    //verify if it matches
-    // Change money to the amount in the account 
+    while (!LoginPasswordValidation(username, password, users))
+    {
+        cout << "\nPassword incorrect please try again:\n";
+        cin >> password;
+    }
+     
     system("CLS");
-
+    string StringMoney = MoneyInUserAccount(username, password, users);
+    money = stof(StringMoney);
     LoggedinScreen(money,users);
-
 }
 
 void RegisterScreen(char choice, vector<string>&users)
@@ -267,6 +346,7 @@ void RegisterScreen(char choice, vector<string>&users)
 
 void CancelAccountScreen(char& choice,float& money, vector<string>&users)
 {
+    string password;
     char CancelChoice;
     cout << "Are you sure you want to cancel your account?\n";
     cout << "1-Yes\n";
