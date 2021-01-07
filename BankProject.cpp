@@ -15,13 +15,13 @@ bool LoginPasswordValidation(string username, string password, vector<string>& u
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
 void LoginScreen(char choice, vector<string>&users);//Login menu screen
-void LoggedinScreen(float& money, vector<string>&users);//The screen that comes up after login
+void LoggedinScreen(float& money, string &LoggedAccount, vector<string>&users);//The screen that comes up after login
 void RegisterScreen(char choice, vector<string>&users);//The screen that comes up when asked to register
-void CancelAccountScreen(char& choice,float& money, vector<string>&users);//The screen that comes up after you chose to cancel the account
-void LogoutScreen(char& choice, float& money, vector<string>&users);//The screen that comes up after logout command 
-void Deposit(float& money, vector<string>&users);//Deposit screen
-void Withdraw(float& money, vector<string>&users);//Withdraw screen
-string MoneyInUserAccount(string username, vector<string>& users);
+void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&users);//The screen that comes up after you chose to cancel the account
+void LogoutScreen( float& money, string& LoggedAccount, vector<string>&users);//The screen that comes up after logout command 
+void Deposit(float& money, string& LoggedAccount, vector<string>&users);//Deposit screen
+void Withdraw(float& money, string& LoggedAccount, vector<string>&users);//Withdraw screen
+string MoneyInUserAccount(string username,string password, vector<string>& users);
 
 int main()
 {
@@ -300,7 +300,12 @@ void LoginScreen(char choice, vector<string>&users)
     system("CLS");
     string StringMoney = MoneyInUserAccount(username, password, users);
     money = stof(StringMoney);
-    LoggedinScreen(money,users);
+    FullUser += username;
+    FullUser += ':';
+    FullUser += password;
+    FullUser += ':';
+    FullUser += StringMoney;
+    LoggedinScreen(money,FullUser,users);
 }
 
 void RegisterScreen(char choice, vector<string>&users)
@@ -344,7 +349,7 @@ void RegisterScreen(char choice, vector<string>&users)
     MainScreen(choice,users);
 }
 
-void CancelAccountScreen(char& choice,float& money, vector<string>&users)
+void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&users)
 {
     string password;
     char CancelChoice;
@@ -361,23 +366,24 @@ void CancelAccountScreen(char& choice,float& money, vector<string>&users)
     system("CLS");
     if (CancelChoice == '1')
     {
-        cout << "Enter password to confirm: \n";
-        //hash and validate 
-        
         if (money != 0)
         {
             cout << "Cannot Delete account.You have " << money << " BGN in it.";
-            LoggedinScreen(money,users);
+            LoggedinScreen(money, LoggedAccount, users);
         }
+        cout << "Enter password to confirm: \n";
+        //hash and validate 
+        
+        
         //delete account
     }
     if (CancelChoice == '2')
     {
-        LoggedinScreen(money,users);
+        LoggedinScreen(money, LoggedAccount, users);
     }
 }
 
-void Deposit(float& money, vector<string>&users)
+void Deposit(float& money,string &LoggedAccount, vector<string>&users)
 {
     float deposit;
     cout << "How much would you like to deposit?";
@@ -385,10 +391,10 @@ void Deposit(float& money, vector<string>&users)
     deposit=RoundMoney(deposit);
     money += deposit;
     system("CLS");
-    LoggedinScreen(money,users);
+    LoggedinScreen(money,LoggedAccount,users);
 }
 
-void LogoutScreen(char& choice,float& money, vector<string>&users)
+void LogoutScreen(float& money, string& LoggedAccount, vector<string>&users)
 {
     char LogoutChoice;
     cout << "Are you sure you wish to logout?\n";
@@ -403,15 +409,15 @@ void LogoutScreen(char& choice,float& money, vector<string>&users)
     system("CLS");
     if (LogoutChoice == '1')
     {
-        MainScreen(choice,users);
+        MainScreen(LogoutChoice,users);
     }
     if (LogoutChoice == '2')
     {
-        LoggedinScreen(money,users);
+        LoggedinScreen(money,LoggedAccount,users);
     }
 }
 
-void Withdraw(float& money, vector<string>&users)
+void Withdraw(float& money, string& LoggedAccount, vector<string>&users)
 {
     float withdraw;
     cout << "How much would you like to withdraw?\n";
@@ -427,10 +433,10 @@ void Withdraw(float& money, vector<string>&users)
     money -= withdraw;
 
     system("CLS");
-    LoggedinScreen(money,users);
+    LoggedinScreen(money,LoggedAccount,users);
 }
 
-void LoggedinScreen(float& money, vector<string>&users)
+void LoggedinScreen(float& money,string &LoggedAccount, vector<string>&users)
 {
     char choice2;
     float Amount = money;
@@ -450,19 +456,19 @@ void LoggedinScreen(float& money, vector<string>&users)
     switch (choice2)
     {
         case 'C':
-            CancelAccountScreen(choice2,Amount,users);
+            CancelAccountScreen(Amount,LoggedAccount,users);
             break;
         case 'D':
-            Deposit(money,users);
+            Deposit(money,LoggedAccount,users);
             break;
         case 'L':
-            LogoutScreen(choice2, Amount,users);
+            LogoutScreen(Amount,LoggedAccount,users);
             break;
         case 'T':
             //transfer
             break;
         case 'W':
-            Withdraw(money,users);
+            Withdraw(money,LoggedAccount,users);
             break;
     }
 }
