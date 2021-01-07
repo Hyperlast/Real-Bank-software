@@ -9,7 +9,8 @@ using namespace std;
 bool MainValidation(char& choice);//Validation for the first command key
 bool LoggedInValidation(char& choice2);//Validating for the command you give after login
 bool RegisterUsernameValidation(string username);//Validation of the Username accepted characters 
-bool RegisterPasswordValidation(string password);//Validation of the Password accepted and 
+bool RegisterPasswordValidation(string password);//Validation of the Password accepted and
+bool UsernameLoginValidation(string username, vector<string>& users);
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
 void LoginScreen(char choice, vector<string>&users);//Login menu screen
@@ -28,7 +29,6 @@ int main()
 
     return 0;
 }
-
 
 void MainScreen(char input,vector<string>&users)
 {  
@@ -113,6 +113,27 @@ bool LoggedInValidation(char& choice2)
     return true;
 }
 
+bool UsernameLoginValidation(string username, vector<string>& users)
+{
+    for (int i = 0; i < users.size(); ++i)
+    {
+        {
+            string temp = users[i];
+            string UsernameVar;
+            int j = 0;
+            while (temp[j] != ':')
+            {
+                UsernameVar += temp[j];
+                ++j;
+            }
+            if (username == UsernameVar)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 bool RegisterUsernameValidation(string username)
 {
    
@@ -189,25 +210,11 @@ void LoginScreen(char choice, vector<string>&users)
     cout << "Login\n\n";
     cout << "username:";
     cin >> username;
-    //implement into function 
-    for (int i = 0; i < users.size(); ++i)
+    while (!UsernameLoginValidation(username, users))
     {
-        string temp = users[i];
-        string UsernameVar;
-        int j = 0;
-        while (temp[j] != ':')
-        {
-            UsernameVar += temp[j];
-            ++j;
-        }
-        if (username == UsernameVar)
-        {
-            FullUser += username;
-            FullUser += ':';
-            break;
-        }
+        cout << "\nUsername does not exist in the database,try again:\n";
+        cin >> username;
     }
-    //verify if it exists
     cout << "\npassword:";
     cin >> password;
     //verify if it matches
