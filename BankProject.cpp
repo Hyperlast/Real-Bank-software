@@ -24,18 +24,10 @@ void Withdraw(float& money, vector<string>&users);//Withdraw screen
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
-    vector<string> nullVec;//needed to pass the mainscreen function initially 
-    MainScreen(input,nullVec);//Main screen of the program
-
-    return 0;
-}
-
-void MainScreen(char input,vector<string>&users)
-{  
     vector<string>accounts;
     string buffer;
     fstream file;
-    file.open("users.txt" ,fstream::in);
+    file.open("users.txt", fstream::in);
     if (!file.is_open())
     {
         system("CLS");
@@ -46,10 +38,17 @@ void MainScreen(char input,vector<string>&users)
         accounts.push_back(buffer);
     }
     file.close();
-    
-    for (unsigned int i = 0; i < accounts.size(); ++i)
+
+    MainScreen(input,accounts);//Main screen of the program
+
+    return 0;
+}
+
+void MainScreen(char input,vector<string>&users)
+{  
+    for (unsigned int i = 0; i < users.size(); ++i)
     {
-        cout << accounts[i]<<endl;
+        cout << users[i]<<endl;
     }
     
     cout << "Welcome to Sevastopol Bank" << endl << endl << endl;
@@ -70,11 +69,11 @@ void MainScreen(char input,vector<string>&users)
     switch (choice)
     {
         case 'L':
-            LoginScreen(choice,accounts);
+            LoginScreen(choice,users);
             break;
 
         case 'R':
-            RegisterScreen(choice,accounts);
+            RegisterScreen(choice,users);
             break;
         case 'Q':
             //save changes to registry and quit the text file ;
@@ -115,7 +114,7 @@ bool LoggedInValidation(char& choice2)
 
 bool UsernameLoginValidation(string username, vector<string>& users)
 {
-    for (int i = 0; i < users.size(); ++i)
+    for ( unsigned int i = 0; i < users.size(); ++i)
     {
         {
             string temp = users[i];
@@ -227,7 +226,6 @@ void LoginScreen(char choice, vector<string>&users)
 
 void RegisterScreen(char choice, vector<string>&users)
 {
-    
     string Name;
     string Password;
     string Passwordtemp;
@@ -236,12 +234,11 @@ void RegisterScreen(char choice, vector<string>&users)
     
     cout << "Enter your username:";
     cin >> Name;
-    while (!RegisterUsernameValidation(Name))
+    while (UsernameLoginValidation(Name, users)||!RegisterUsernameValidation(Name))
     {
-        cout << "\nYou've used a symbol that is not allowed for a username please try again:\n";
+        cout << "\nThat Username is already taken or you have used a forbidden symbol please try again:\n";
         cin >> Name;
     }
-    //validate if there is an existing username using the txt info
     cout << "\nEnter your password that has atleast 1 Large 1 small letter and 1 symbol:";
     cin >> Password;
     while (!RegisterPasswordValidation(Password))
@@ -262,8 +259,8 @@ void RegisterScreen(char choice, vector<string>&users)
     FullAccount += Password;
     FullAccount += ":";
     FullAccount += money;
-    cout << FullAccount;
-    //add account to vector
+    
+    users.push_back(FullAccount);
     system("CLS");
     MainScreen(choice,users);
 }
