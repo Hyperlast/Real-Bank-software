@@ -297,6 +297,7 @@ string MoneyInUserAccount(string username,string password, vector<string>& users
         }
     }
     string Money;
+    float MoneyDecVal;
     int counter = 0;
     for (unsigned int i = 0; i < FindMoneyInAccount.size(); ++i)
     {
@@ -309,6 +310,9 @@ string MoneyInUserAccount(string username,string password, vector<string>& users
             counter++;
         }
     }
+    MoneyDecVal = stof(Money);
+    MoneyDecVal = RoundMoney(MoneyDecVal);
+    Money=(to_string(MoneyDecVal));
     return Money;
 }
 
@@ -433,8 +437,14 @@ void Deposit(float& money,string &LoggedAccount, vector<string>&users)
     float deposit;
     cout << "How much would you like to deposit?";
     cin >> deposit;
+    while (deposit < 0)
+    {
+        cout << "Please deposit a real amount";
+        cin >> deposit;
+    }
     deposit=RoundMoney(deposit);
     money += deposit;
+
     system("CLS");
     LoggedinScreen(money,LoggedAccount,users);
 }
