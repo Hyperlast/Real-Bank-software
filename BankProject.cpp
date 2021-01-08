@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,7 @@ void Deposit(float& money, string& LoggedAccount, vector<string>&users);//Deposi
 void Withdraw(float& money, string& LoggedAccount, vector<string>&users);//Withdraw screen
 string MoneyInUserAccount(string username,string password, vector<string>& users);
 void DeleteAccount(string Account, vector<string>& users);
+void MoneyChange(float& money, string& Account,vector<string> &users);
 
 int main()
 {
@@ -60,7 +62,7 @@ void MainScreen(char input,vector<string>&users)
     cout << "R=Register" << endl;
     cout << "Q=Quit" << endl;
 
-    char choice;//Human choice 
+    char choice;//User choice
     cin >> choice;
     while (!MainValidation(choice))
     {
@@ -312,8 +314,54 @@ string MoneyInUserAccount(string username,string password, vector<string>& users
     }
     MoneyDecVal = stof(Money);
     MoneyDecVal = RoundMoney(MoneyDecVal);
-    Money=(to_string(MoneyDecVal));
+    ostringstream ss;
+    ss << MoneyDecVal;
+    Money=(ss.str());
     return Money;
+}
+
+void MoneyChange(float& money, string& Account,vector<string>&users)
+{
+    int counter=0;
+    for (unsigned int i = 0; i < Account.size(); ++i)
+    {
+        if (counter == 2)
+        {
+            Account.erase(Account.begin() + i, Account.end());
+        }
+        if (Account[i] == ':')
+        {
+            counter++;
+        }
+    }
+   
+    ostringstream ss;
+    ss << money;
+    string MoneyDiff(ss.str());
+    unsigned tempNumb=0;
+    for (unsigned int j = 0; j < users.size(); ++j)
+    {
+        string temp=users[j];
+        string Checker;
+        int counter = 0;
+        int k = 0;
+        while (counter != 2)
+        {
+            if (temp[k] == ':')
+            {
+                counter++;
+            }
+            Checker += temp[k];
+            k++;
+        }
+        
+        if (Account == Checker)
+        {
+            tempNumb = j;
+        }
+    }
+    Account += MoneyDiff;
+    users[tempNumb]=Account;
 }
 
 void LoginScreen(char choice, vector<string>&users)
@@ -437,14 +485,16 @@ void Deposit(float& money,string &LoggedAccount, vector<string>&users)
     float deposit;
     cout << "How much would you like to deposit?";
     cin >> deposit;
-    while (deposit < 0)
+    while (deposit < 0||cin.fail())
     {
         cout << "Please deposit a real amount";
         cin >> deposit;
+        cin.clear();
     }
     deposit=RoundMoney(deposit);
     money += deposit;
 
+    MoneyChange(money, LoggedAccount,users);
     system("CLS");
     LoggedinScreen(money,LoggedAccount,users);
 }
@@ -477,16 +527,24 @@ void Withdraw(float& money, string& LoggedAccount, vector<string>&users)
     float withdraw;
     cout << "How much would you like to withdraw?\n";
     cin >> withdraw;
+    while (withdraw < 0||cin.fail())
+    {
+        cout << "\nCannot withdraw this ammount,please try again: ";
+        cin >> withdraw;
+        cin.clear();
+    }
     withdraw=RoundMoney(withdraw);
     
-    while ((money - withdraw) < -10000)
+    while (((money - withdraw) < -10000)||(withdraw <0 )||cin.fail())
     {
         cout << "Cannot withdraw that amount because your balance is "<<money<<" try again:";
         cin >> withdraw;
         withdraw=RoundMoney(withdraw);
+        cin.clear();
+        
     }
     money -= withdraw;
-
+    MoneyChange(money, LoggedAccount, users);
     system("CLS");
     LoggedinScreen(money,LoggedAccount,users);
 }
