@@ -15,6 +15,7 @@ bool UsernameLoginValidation(string username, vector<string>& users);
 bool LoginPasswordValidation(string username, string password, vector<string>& users);
 bool CancelAccountPassValidation(string account, string password);
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
+void ReadTxtFile(vector<string>& Accounts);//rewrites text file into the vector 
 void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
 void LoginScreen(char choice, vector<string>&users);//Login menu screen
 void LoggedinScreen(float& money, string &LoggedAccount, vector<string>&users);//The screen that comes up after login
@@ -24,28 +25,16 @@ void LogoutScreen( float& money, string& LoggedAccount, vector<string>&users);//
 void Deposit(float& money, string& LoggedAccount, vector<string>&users);//Deposit screen
 void Transfer(float& money, string& LoggedAccount, vector<string>& users);//Transfer money in another account screen
 void Withdraw(float& money, string& LoggedAccount, vector<string>&users);//Withdraw screen
-string MoneyInUserAccount(string username,string password, vector<string>& users);//returns the money in a specific users account as a string 
+string MoneyInUserAccount(string username, vector<string>& users);//returns the money in a specific users account as a string 
 void DeleteAccount(string Account, vector<string>& users);//deletes the account from the vector database
 void MoneyChange(float& money, string& Account,vector<string> &users);//Solidifies the changes in users money
+string ShowFullAccount(string username, vector<string>& users);
 
 int main()
 {
     char input = 1;//needed for the function that shows the Mainscreen
     vector<string>accounts;
-    string buffer;
-    fstream file;
-    file.open("users.txt", fstream::in);
-    if (!file.is_open())
-    {
-        system("CLS");
-        cout << "The users.txt file can't be opened please check for it and try again";
-    }
-    while (getline(file, buffer))
-    {
-        accounts.push_back(buffer);
-    }
-    file.close();
-
+    ReadTxtFile(accounts);
     MainScreen(input,accounts);//Main screen of the program
 
     return 0;
@@ -83,10 +72,44 @@ void MainScreen(char input,vector<string>&users)
             RegisterScreen(choice,users);
             break;
         case 'Q':
-            //save changes to registry and quit the text file ;
+            ofstream txtFile;
+            txtFile.open("users.txt", ofstream::out | ofstream::trunc);
+            if (!txtFile.is_open())
+            {
+                cout << "Something went wrong with the users.txt file please look at it and relaunch the program.Press character key to continue:\n ";
+                char temp;
+                cin >> temp;
+            }
+            txtFile.close();
+
+            txtFile.open("users.txt", ofstream::out);
+            if (txtFile.is_open())
+            {
+                for (unsigned int i = 0; i < users.size(); ++i)
+                {
+                    txtFile << users[i] << endl;
+                }
+            }
             break;
 
     }
+}
+
+void ReadTxtFile(vector<string> &Accounts)
+{
+    string buffer;
+    fstream file;
+    file.open("users.txt", fstream::in);
+    if (!file.is_open())
+    {
+        system("CLS");
+        cout << "The users.txt file can't be opened please check for it and try again";
+    }
+    while (getline(file, buffer))
+    {
+        Accounts.push_back(buffer);
+    }
+    file.close();
 }
 
 bool MainValidation(char& choice)
@@ -274,7 +297,7 @@ float RoundMoney(float& money)
     return value / 100;
 }
 
-string MoneyInUserAccount(string username,string password, vector<string>& users)
+string MoneyInUserAccount(string username, vector<string>& users)
 {
     string FindMoneyInAccount;
     bool AccountFound = false;
@@ -321,6 +344,27 @@ string MoneyInUserAccount(string username,string password, vector<string>& users
     return Money;
 }
 
+string ShowFullAccount(string username, vector<string>& users)
+{
+    for (unsigned int i = 0; i < users.size(); ++i)
+    {
+        string temp = users[i];
+        string AccountChecker;
+        unsigned int j = 0;
+        while (temp[j] != ':')
+        {
+            AccountChecker += temp[j];
+            j++;
+        }
+        if (AccountChecker == username)
+        {
+            AccountChecker = users[i];
+            return AccountChecker;
+        }
+    }
+    return username;
+}
+
 void MoneyChange(float& money, string& Account,vector<string>&users)
 {
     int counter=0;
@@ -364,7 +408,7 @@ void MoneyChange(float& money, string& Account,vector<string>&users)
     Account += MoneyDiff;
     users[tempNumb]=Account;
 }
-
+//needs hash
 void LoginScreen(char choice, vector<string>&users)
 {
     string FullUser;
@@ -389,7 +433,7 @@ void LoginScreen(char choice, vector<string>&users)
     }
      
     system("CLS");
-    string StringMoney = MoneyInUserAccount(username, password, users);
+    string StringMoney = MoneyInUserAccount(username, users);
     money = stof(StringMoney);
     FullUser += username;
     FullUser += ':';
@@ -398,7 +442,7 @@ void LoginScreen(char choice, vector<string>&users)
     FullUser += StringMoney;
     LoggedinScreen(money,FullUser,users);
 }
-
+//needs hash
 void RegisterScreen(char choice, vector<string>&users)
 {
     string Name;
@@ -439,7 +483,7 @@ void RegisterScreen(char choice, vector<string>&users)
     system("CLS");
     MainScreen(choice,users);
 }
-
+//needs hash
 void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&users)
 {
     string password;
@@ -573,8 +617,21 @@ void Transfer(float& money, string& LoggedAccount, vector<string>& users)
         cout << "You dont have enough funds in your account\nCurrent funds "<<money<<" BGN,try again: ";
         cin >> Transfer;
     }
-    //Make a function that returns the second account
-    //make changes to money in both accounts
+    Transfer=RoundMoney(Transfer);
+    money -= Transfer;
+   
+    string StringMoneySecAc = MoneyInUserAccount(SecondAccount, users);
+    cout << StringMoneySecAc;
+
+    float MoneyInSecAcc=stof(StringMoneySecAc);
+    MoneyInSecAcc += Transfer;
+
+    string FullSecAccount;
+    FullSecAccount = ShowFullAccount(SecondAccount, users);
+
+    MoneyChange(money, LoggedAccount, users);
+    MoneyChange(MoneyInSecAcc, FullSecAccount, users);
+
     system("CLS");
     LoggedinScreen(money, LoggedAccount, users);
 }
@@ -583,7 +640,6 @@ void LoggedinScreen(float& money,string &LoggedAccount, vector<string>&users)
 {
     char choice2;
     
-
     cout << "You have " << money << " BGN. Choose one of the following options:" << endl;
     cout << "C - Cancel account"<<endl;
     cout << "D - deposit" << endl;
