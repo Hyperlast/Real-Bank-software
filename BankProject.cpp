@@ -12,6 +12,7 @@ bool RegisterUsernameValidation(string username);//Validation of the Username ac
 bool RegisterPasswordValidation(string password);//Validation of the Password accepted and
 bool UsernameLoginValidation(string username, vector<string>& users);
 bool LoginPasswordValidation(string username, string password, vector<string>& users);
+bool CancelAccountPassValidation(string account, string password);
 float RoundMoney(float& money);//Rounds the money that is deposited transferred or withdrawn
 void MainScreen(char input, vector<string>&users);//Main screen and the operations in it
 void LoginScreen(char choice, vector<string>&users);//Login menu screen
@@ -22,6 +23,7 @@ void LogoutScreen( float& money, string& LoggedAccount, vector<string>&users);//
 void Deposit(float& money, string& LoggedAccount, vector<string>&users);//Deposit screen
 void Withdraw(float& money, string& LoggedAccount, vector<string>&users);//Withdraw screen
 string MoneyInUserAccount(string username,string password, vector<string>& users);
+void DeleteAccount(string Account, vector<string>& users);
 
 int main()
 {
@@ -228,6 +230,41 @@ bool LoginPasswordValidation(string username, string password, vector<string>& u
     return false;
 }
 
+bool CancelAccountPassValidation(string account, string password)
+{
+    string FullAccountVal;
+    string username;
+    unsigned int i = 0;
+    while (account[i] != ':')
+    {
+        username += account[i];
+        i++;
+    }
+    FullAccountVal += username;
+    FullAccountVal += ':';
+    FullAccountVal += password;
+    FullAccountVal += ':';
+    FullAccountVal += '0';
+    if (FullAccountVal == account)
+    {
+        return true;
+    }
+    return false;
+    
+}
+
+void DeleteAccount(string Account, vector<string> &users)
+{   
+    for (unsigned int i = 0; i < users.size(); ++i)
+    {
+       
+        if (Account == users[i])
+        {
+            users.erase(users.begin() + i);
+        }
+    }
+}
+
 float RoundMoney(float& money)
 {
     float value = roundf(money * 100);
@@ -291,6 +328,7 @@ void LoginScreen(char choice, vector<string>&users)
     }
     cout << "\npassword:";
     cin >> password;
+    //hash password
     while (!LoginPasswordValidation(username, password, users))
     {
         cout << "\nPassword incorrect please try again:\n";
@@ -372,10 +410,17 @@ void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&use
             LoggedinScreen(money, LoggedAccount, users);
         }
         cout << "Enter password to confirm: \n";
-        //hash and validate 
+        cin >> password;
+        //hash
+        while (!CancelAccountPassValidation(LoggedAccount, password))
+        {
+            cout << "\nThe password doesn't match please try again:\n";
+            cin >> password;
+        }
         
-        
-        //delete account
+        DeleteAccount(LoggedAccount, users);
+        system("CLS");
+        MainScreen(CancelChoice, users);
     }
     if (CancelChoice == '2')
     {
