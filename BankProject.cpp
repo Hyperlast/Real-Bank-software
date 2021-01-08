@@ -22,10 +22,11 @@ void RegisterScreen(char choice, vector<string>&users);//The screen that comes u
 void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&users);//The screen that comes up after you chose to cancel the account
 void LogoutScreen( float& money, string& LoggedAccount, vector<string>&users);//The screen that comes up after logout command 
 void Deposit(float& money, string& LoggedAccount, vector<string>&users);//Deposit screen
+void Transfer(float& money, string& LoggedAccount, vector<string>& users);//Transfer money in another account screen
 void Withdraw(float& money, string& LoggedAccount, vector<string>&users);//Withdraw screen
-string MoneyInUserAccount(string username,string password, vector<string>& users);
-void DeleteAccount(string Account, vector<string>& users);
-void MoneyChange(float& money, string& Account,vector<string> &users);
+string MoneyInUserAccount(string username,string password, vector<string>& users);//returns the money in a specific users account as a string 
+void DeleteAccount(string Account, vector<string>& users);//deletes the account from the vector database
+void MoneyChange(float& money, string& Account,vector<string> &users);//Solidifies the changes in users money
 
 int main()
 {
@@ -469,7 +470,7 @@ void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&use
             cout << "\nThe password doesn't match please try again:\n";
             cin >> password;
         }
-        
+
         DeleteAccount(LoggedAccount, users);
         system("CLS");
         MainScreen(CancelChoice, users);
@@ -480,26 +481,26 @@ void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&use
     }
 }
 
-void Deposit(float& money,string &LoggedAccount, vector<string>&users)
+void Deposit(float& money, string& LoggedAccount, vector<string>& users)
 {
     float deposit;
     cout << "How much would you like to deposit?";
     cin >> deposit;
-    while (deposit < 0||cin.fail())
+    while (deposit < 0 || cin.fail())
     {
         cout << "Please deposit a real amount";
         cin >> deposit;
         cin.clear();
     }
-    deposit=RoundMoney(deposit);
+    deposit = RoundMoney(deposit);
     money += deposit;
 
-    MoneyChange(money, LoggedAccount,users);
+    MoneyChange(money, LoggedAccount, users);
     system("CLS");
-    LoggedinScreen(money,LoggedAccount,users);
+    LoggedinScreen(money, LoggedAccount, users);
 }
 
-void LogoutScreen(float& money, string& LoggedAccount, vector<string>&users)
+void LogoutScreen(float& money, string& LoggedAccount, vector<string>& users)
 {
     char LogoutChoice;
     cout << "Are you sure you wish to logout?\n";
@@ -514,45 +515,75 @@ void LogoutScreen(float& money, string& LoggedAccount, vector<string>&users)
     system("CLS");
     if (LogoutChoice == '1')
     {
-        MainScreen(LogoutChoice,users);
+        MainScreen(LogoutChoice, users);
     }
     if (LogoutChoice == '2')
     {
-        LoggedinScreen(money,LoggedAccount,users);
+        LoggedinScreen(money, LoggedAccount, users);
     }
 }
 
-void Withdraw(float& money, string& LoggedAccount, vector<string>&users)
+void Withdraw(float& money, string& LoggedAccount, vector<string>& users)
 {
     float withdraw;
     cout << "How much would you like to withdraw?\n";
     cin >> withdraw;
-    while (withdraw < 0||cin.fail())
+    while (withdraw < 0 || cin.fail())
     {
         cout << "\nCannot withdraw this ammount,please try again: ";
         cin >> withdraw;
         cin.clear();
     }
-    withdraw=RoundMoney(withdraw);
-    
-    while (((money - withdraw) < -10000)||(withdraw <0 )||cin.fail())
+    withdraw = RoundMoney(withdraw);
+
+    while (((money - withdraw) < -10000) || (withdraw < 0) || cin.fail())
     {
-        cout << "Cannot withdraw that amount because your balance is "<<money<<" try again:";
+        cout << "Cannot withdraw that amount because your balance is " << money << " try again:";
         cin >> withdraw;
-        withdraw=RoundMoney(withdraw);
+        withdraw = RoundMoney(withdraw);
         cin.clear();
-        
+
     }
     money -= withdraw;
     MoneyChange(money, LoggedAccount, users);
     system("CLS");
-    LoggedinScreen(money,LoggedAccount,users);
+    LoggedinScreen(money, LoggedAccount, users);
+}
+
+void Transfer(float& money, string& LoggedAccount, vector<string>& users)
+{
+    string SecondAccount;
+    float Transfer;
+    cout << "In which Account would you like to transfer money: ";
+    cin >> SecondAccount;
+    while (!UsernameLoginValidation(SecondAccount, users))
+    {
+        cout << "This account has not been found in the database,try again: ";
+        cin >> SecondAccount;
+    }
+    cout << "How much money would you like to transfer: ";
+    cin >> Transfer;
+    while (Transfer < 0 || cin.fail())
+    {
+        cout << "Cannot transfer this ammount,try again: ";
+        cin >> Transfer;
+    }
+    while (((money - Transfer) < -10000) || (Transfer < 0) || cin.fail())
+    {
+        cout << "You dont have enough funds in your account\nCurrent funds "<<money<<" BGN,try again: ";
+        cin >> Transfer;
+    }
+    //Make a function that returns the second account
+    //make changes to money in both accounts
+    system("CLS");
+    LoggedinScreen(money, LoggedAccount, users);
 }
 
 void LoggedinScreen(float& money,string &LoggedAccount, vector<string>&users)
 {
     char choice2;
-    float Amount = money;
+    
+
     cout << "You have " << money << " BGN. Choose one of the following options:" << endl;
     cout << "C - Cancel account"<<endl;
     cout << "D - deposit" << endl;
@@ -560,6 +591,7 @@ void LoggedinScreen(float& money,string &LoggedAccount, vector<string>&users)
     cout << "T - transfer" << endl;
     cout << "W - withdraw" << endl;
     cin >> choice2;
+
     while (!LoggedInValidation(choice2))
     {
         cout << "\n Unrecognised command,try again: \n";
@@ -569,16 +601,16 @@ void LoggedinScreen(float& money,string &LoggedAccount, vector<string>&users)
     switch (choice2)
     {
         case 'C':
-            CancelAccountScreen(Amount,LoggedAccount,users);
+            CancelAccountScreen(money,LoggedAccount,users);
             break;
         case 'D':
             Deposit(money,LoggedAccount,users);
             break;
         case 'L':
-            LogoutScreen(Amount,LoggedAccount,users);
+            LogoutScreen(money,LoggedAccount,users);
             break;
         case 'T':
-            //transfer
+            Transfer(money, LoggedAccount, users);
             break;
         case 'W':
             Withdraw(money,LoggedAccount,users);
