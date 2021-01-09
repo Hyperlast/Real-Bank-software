@@ -29,6 +29,7 @@ string MoneyInUserAccount(string username, vector<string>& users);//returns the 
 void DeleteAccount(string Account, vector<string>& users);//deletes the account from the vector database
 void MoneyChange(float& money, string& Account,vector<string> &users);//Solidifies the changes in users money
 string ShowFullAccount(string username, vector<string>& users);
+string HashPassword(string password);
 
 int main()
 {
@@ -38,6 +39,21 @@ int main()
     MainScreen(input,accounts);//Main screen of the program
 
     return 0;
+}
+
+string HashPassword(string password)
+{
+    const int RandTablePERC = 404;
+    const int RandSeed = 232;
+    unsigned long hash = 0;
+    for (unsigned int i = 0; i < password.size(); ++i)
+    {
+        hash = (hash * RandSeed) + password[i];
+    }
+    hash=hash%RandTablePERC;
+    string PasswordHashed=(to_string(hash));
+
+    return PasswordHashed;
 }
 
 void MainScreen(char input,vector<string>&users)
@@ -116,7 +132,7 @@ bool MainValidation(char& choice)
 {
     if (choice == 'l' || choice == 'r' || choice == 'q')
     {
-        choice -= 32;
+        choice -= ('`'-'@');
         return true;
     }
     if (choice != 'L' && choice != 'R' && choice != 'Q')
@@ -131,7 +147,7 @@ bool LoggedInValidation(char& choice2)
 {
     if (choice2 == 'c' || choice2 == 'd' || choice2 == 'l' || choice2 == 't' || choice2 == 'w')
     {
-        choice2 -= 32;
+        choice2 -= ('`' - '@');
         return true;
     }
     if (choice2 != 'C' && choice2 != 'D' && choice2 != 'L' && choice2 != 'T' && choice2 != 'W')
@@ -185,9 +201,9 @@ bool RegisterPasswordValidation(string password)
     {
         if ((password[i] < '@' || password[i]>'Z') && (password[i] < 'a' || password[i]>'z'))
         {
-            if (password[i] < '0' || password[i]>9)
+            if (password[i] < '0' || password[i]>'9')
             {
-                if ((password[i] != '!' || password[i] != '*' || password[i] != '^') && (password[i] < '#' || password[i]>'&'))
+                if ((password[i] != '!' && password[i] != '*' && password[i] != '^') && (password[i] < '#' || password[i]>'&'))
                 {
                     return false;
                 }
@@ -408,7 +424,7 @@ void MoneyChange(float& money, string& Account,vector<string>&users)
     Account += MoneyDiff;
     users[tempNumb]=Account;
 }
-//needs hash
+
 void LoginScreen(char choice, vector<string>&users)
 {
     string FullUser;
@@ -425,11 +441,12 @@ void LoginScreen(char choice, vector<string>&users)
     }
     cout << "\npassword:";
     cin >> password;
-    //hash password
+    password = HashPassword(password);
     while (!LoginPasswordValidation(username, password, users))
     {
         cout << "\nPassword incorrect please try again:\n";
         cin >> password;
+        password = HashPassword(password);
     }
      
     system("CLS");
@@ -442,7 +459,7 @@ void LoginScreen(char choice, vector<string>&users)
     FullUser += StringMoney;
     LoggedinScreen(money,FullUser,users);
 }
-//needs hash
+
 void RegisterScreen(char choice, vector<string>&users)
 {
     string Name;
@@ -472,7 +489,7 @@ void RegisterScreen(char choice, vector<string>&users)
         cout << "\nPassword validation incorrect,try to confirm your passowrd again:";
         cin >> Passwordtemp;
     }
-    //hashpassword
+    Password = HashPassword(Password);
     string FullAccount = Name;
     FullAccount += ":";
     FullAccount += Password;
@@ -483,7 +500,7 @@ void RegisterScreen(char choice, vector<string>&users)
     system("CLS");
     MainScreen(choice,users);
 }
-//needs hash
+
 void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&users)
 {
     string password;
@@ -508,11 +525,12 @@ void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&use
         }
         cout << "Enter password to confirm: \n";
         cin >> password;
-        //hash
+        password = HashPassword(password);
         while (!CancelAccountPassValidation(LoggedAccount, password))
         {
             cout << "\nThe password doesn't match please try again:\n";
             cin >> password;
+            password = HashPassword(password);
         }
 
         DeleteAccount(LoggedAccount, users);
