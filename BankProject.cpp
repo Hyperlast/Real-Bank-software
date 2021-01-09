@@ -57,12 +57,7 @@ string HashPassword(string password)
 }
 
 void MainScreen(char input,vector<string>&users)
-{  
-    for (unsigned int i = 0; i < users.size(); ++i)
-    {
-        cout << users[i]<<endl;
-    }
-    
+{   
     cout << "Welcome to Sevastopol Bank" << endl << endl << endl;
     cout << "L-Login" << endl;
     cout << "R=Register" << endl;
