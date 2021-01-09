@@ -515,22 +515,29 @@ void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>&use
     {
         if (money != 0)
         {
-            cout << "Cannot Delete account.You have " << money << " BGN in it.";
+            cout << "Cannot Delete account.You have " << money << " BGN in it.\n";
+            char AnyKey;
+            cout << "Press any Character key to continue: ";
+            cin >> AnyKey;
+            system("CLS");
             LoggedinScreen(money, LoggedAccount, users);
         }
-        cout << "Enter password to confirm: \n";
-        cin >> password;
-        password = HashPassword(password);
-        while (!CancelAccountPassValidation(LoggedAccount, password))
+        else
         {
-            cout << "\nThe password doesn't match please try again:\n";
+            cout << "Enter password to confirm: \n";
             cin >> password;
             password = HashPassword(password);
-        }
+            while (!CancelAccountPassValidation(LoggedAccount, password))
+            {
+                cout << "\nThe password doesn't match please try again:\n";
+                cin >> password;
+                password = HashPassword(password);
+            }
 
-        DeleteAccount(LoggedAccount, users);
-        system("CLS");
-        MainScreen(CancelChoice, users);
+            DeleteAccount(LoggedAccount, users);
+            system("CLS");
+            MainScreen(CancelChoice, users);
+        }
     }
     if (CancelChoice == '2')
     {
