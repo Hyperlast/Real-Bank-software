@@ -133,7 +133,7 @@ void RegisterScreen(char choice, vector<string>& users)
 
     users.push_back(FullAccount);
     system("CLS");
-    MainScreen(choice, users);
+    LoginScreen(choice, users);
 }
 
 void CancelAccountScreen(float& money, string& LoggedAccount, vector<string>& users)
